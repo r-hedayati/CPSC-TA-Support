@@ -1,0 +1,7 @@
+deadline: "2019-09-27 22:00" #YYYY-MM-DD HH:MM in 24 hour format
+zip_file_name: "AS1.zip" #make sure you have access to the directory of the zip file
+late_window: 15  #late duration window in minutes for the deadline
+course_name: "CourseName"
+assignment_name: "AssignmentName"
+filter_label: "Late" #choose beetwen "LATE", "EARLY", and "LATE (within offset)"
+output_format: "excel" #choose beetwen "excel" and "csv"
