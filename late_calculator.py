@@ -166,7 +166,7 @@ def main():
     
     try:
         deadline, zip_file_name, csv_file_name, course_name, assignment_name, personal_days_column, late_window, filter_label, output_format = get_user_inputs(yaml_file)
-        # extract_zip(zip_file_name)
+        extract_zip(zip_file_name)
         submissions = parse_folder_names()
         late_submissions = calculate_late_submissions(submissions, deadline, late_window)
         generate_output(late_submissions, course_name, assignment_name, output_format)
