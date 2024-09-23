@@ -5,22 +5,22 @@ This script processes student assignment submissions, calculates late durations,
 # Prerequisites
 
 - Python 3.10 and above
-- Required Python packages: zipfile, os, pandas, datetime, yaml, sys
-
+- Required Python packages: `zipfile`, `os`, `pandas`, `datetime`, `yaml`, `sys`
 
 # Installation
 
 1. Clone the repository or download the script files.
-2. Install the required Python packages using pip/conda:
+2. Install the required Python packages using pip/Conda:
 
 # Configuration
 
-Create a config.yml file in the same directory as the script with the following structure:
+Create a `config.yml` file in the same directory as the script with the following structure:
     
 ```yaml
 
 deadline: "2019-09-27 22:00" #YYYY-MM-DD HH:MM in 24 hour format
 zip_file_name: "AS1.zip" #make sure you have access to the directory of the zip file
+csv_input_file_name: "grade_book_CourseName_AssignmentName.csv" #grade book file name
 late_window: 15  #late duration window in minutes for the deadline
 course_name: "CourseName"
 assignment_name: "AssignmentName"
@@ -38,7 +38,7 @@ output_format: "excel" #choose beetwen "excel" and "csv"
 python late_submission_calculator.py config.yml
 ```
 
-if no argument is provided, the script will look for a config.yml file in the same directory.
+If no argument is provided, the script will look for a `config.yml` file in the same directory.
 
 # Output
 
@@ -48,6 +48,11 @@ The script generates a report file in either CSV or Excel format based on the co
 - Submission Time
 - Late Duration
 - Submission Status (Early, Late, or Late within offset)
+- Late Days (For tracking how many days late the submission is)
+
+Also, the script generates a summary of the late submissions.
+
+If a grade book is provided, the script will generate a new grade book with "Personal Days Used" column appended, which will show the total number of days used by each student for late submissions.
 
 # Notes
 
