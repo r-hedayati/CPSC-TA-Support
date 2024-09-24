@@ -14,7 +14,7 @@ def get_user_inputs(yaml_file):
     except yaml.YAMLError as e:
         raise ValueError(f"Invalid YAML file: {e}")
     
-    required_inputs = ['deadline', 'zip_file_name', 'grade_book_csv_input_file_name', 'course_name', 'assignment_name', 'personal_days_column_id', 'late_window', 'filter_label', 'output_format']
+    required_inputs = ['deadline', 'zip_file_name', 'grade_book_csv_input_file_name', 'grade_book_analysis', 'course_name', 'assignment_name', 'personal_days_column_id', 'late_window', 'filter_label', 'output_format']
     for input in required_inputs:
         if input not in config:
             raise KeyError(f"Missing required configuration input: {input}")
@@ -22,6 +22,7 @@ def get_user_inputs(yaml_file):
     deadline_str = config['deadline']
     zip_file_name = config['zip_file_name']
     csv_file_name = config['grade_book_csv_input_file_name']
+    grade_book_flag = config['grade_book_analysis']
     personal_days_column = config['personal_days_column_id']
     late_window = config['late_window']
     course_name = config['course_name']
@@ -31,7 +32,7 @@ def get_user_inputs(yaml_file):
     
     deadline = datetime.strptime(deadline_str, "%Y-%m-%d %H:%M")
     
-    return deadline, zip_file_name, csv_file_name, course_name, assignment_name, personal_days_column, late_window, filter_label, output_format
+    return deadline, zip_file_name, csv_file_name, grade_book_flag, course_name, assignment_name, personal_days_column, late_window, filter_label, output_format
 
 def extract_zip(zip_file_name):
     if not os.path.exists(zip_file_name):
@@ -119,39 +120,41 @@ def generate_output(late_submissions, course_name, assignment_name, output_forma
     except IOError as e:
         print(f"An error occurred while writing the file: {e}")
 
-def grade_book_report(grade_book_csv, personal_days_column_id, late_submissions, course_name, assignment_name):
-    try:
-        df = pd.read_csv(grade_book_csv)
-    except pd.errors.ParserError as e:
-        raise ValueError(f"Error reading CSV file: {e}")
-    
-    personal_days_column_name = "Personal Days Used"
-    
-    if personal_days_column_name in df.columns:
-        personal_days_column_id = df.columns.get_loc(personal_days_column_name)
-    else:
-        if personal_days_column_id >= len(df.columns):
-            raise ValueError(f"Column index {personal_days_column_id} is out of range for the CSV file.")
-        df.insert(personal_days_column_id, personal_days_column_name, 0)
-
-    # Add "Student Name" column
-    df["Student Name"] = df["First Name"] + " " + df["Last Name"]
-    
-    for student_name, late_info in late_submissions.items():
-        if student_name in df['Student Name'].values:
-            current_days_used = df.loc[df['Student Name'] == student_name, df.columns[personal_days_column_id]].values[0]
-            
-            additional_days_used = late_info['Late Days']
-            df.loc[df['Student Name'] == student_name, df.columns[personal_days_column_id]] = current_days_used + additional_days_used
+def grade_book_report(grade_book_csv, grade_book_flag, personal_days_column_id, late_submissions, course_name, assignment_name):
+    if grade_book_flag == True:
+        try:
+            df = pd.read_csv(grade_book_csv)
+        except pd.errors.ParserError as e:
+            raise ValueError(f"Error reading CSV file: {e}")
+        
+        personal_days_column_name = "Personal Days Used"
+        
+        if personal_days_column_name in df.columns:
+            personal_days_column_id = df.columns.get_loc(personal_days_column_name)
         else:
-            print(f"Student {student_name} not found in grade book.")
-    
-    df.drop(columns=["Student Name"], inplace=True)
-    output_file = f"grade_book_{course_name}_{assignment_name}.csv"
-    df.to_csv(output_file, index=False)
-    print(f"Updated grade book CSV file generated: {output_file}")
+            if personal_days_column_id >= len(df.columns):
+                raise ValueError(f"Column index {personal_days_column_id} is out of range for the CSV file.")
+            df.insert(personal_days_column_id, personal_days_column_name, 0)
 
-    return df
+        # Add "Student Name" column
+        df["Student Name"] = df["First Name"] + " " + df["Last Name"]
+        
+        for student_name, late_info in late_submissions.items():
+            if student_name in df['Student Name'].values:
+                current_days_used = df.loc[df['Student Name'] == student_name, df.columns[personal_days_column_id]].values[0]
+                
+                additional_days_used = late_info['Late Days']
+                df.loc[df['Student Name'] == student_name, df.columns[personal_days_column_id]] = current_days_used + additional_days_used
+            else:
+                print(f"Student {student_name} not found in grade book.")
+        
+        df.drop(columns=["Student Name"], inplace=True)
+        output_file = f"grade_book_{course_name}_{assignment_name}.csv"
+        df.to_csv(output_file, index=False)
+        print(f"Updated grade book CSV file generated: {output_file}")
+    else: 
+        print("Grade book analysis not enabled.")
+    
 
 
 
@@ -165,14 +168,14 @@ def main():
         yaml_file = default_yaml_file
     
     try:
-        deadline, zip_file_name, csv_file_name, course_name, assignment_name, personal_days_column, late_window, filter_label, output_format = get_user_inputs(yaml_file)
+        deadline, zip_file_name, csv_file_name, grade_book_flag, course_name, assignment_name, personal_days_column, late_window, filter_label, output_format = get_user_inputs(yaml_file)
         extract_zip(zip_file_name)
         submissions = parse_folder_names()
         late_submissions = calculate_late_submissions(submissions, deadline, late_window)
         generate_output(late_submissions, course_name, assignment_name, output_format)
 
         # Update the grade book
-        grade_book = grade_book_report(csv_file_name, personal_days_column, late_submissions, course_name, assignment_name)
+        grade_book_report(csv_file_name, grade_book_flag, personal_days_column, late_submissions, course_name, assignment_name)
     
     except (FileNotFoundError, ValueError, KeyError, OSError) as e:
         print(f"Error: {e}")

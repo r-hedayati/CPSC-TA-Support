@@ -21,6 +21,7 @@ Create a `config.yml` file in the same directory as the script with the followin
 deadline: "2019-09-27 22:00" #YYYY-MM-DD HH:MM in 24 hour format
 zip_file_name: "AS1.zip" #make sure you have access to the directory of the zip file
 csv_input_file_name: "grade_book_CourseName_AssignmentName.csv" #grade book file name
+grade_book_analysis: False #Default is False, set to True if you want to analyze the grade book
 late_window: 15  #late duration window in minutes for the deadline
 course_name: "CourseName"
 assignment_name: "AssignmentName"
@@ -52,7 +53,7 @@ The script generates a report file in either CSV or Excel format based on the co
 
 Also, the script generates a summary of the late submissions.
 
-If a grade book is provided, the script will generate a new grade book with "Personal Days Used" column appended, which will show the total number of days used by each student for late submissions.
+If a grade book is provided and the `grade_book_analysis` flag in input is `True`, the script will generate a new grade book with "Personal Days Used" column appended, which will show the total number of days used by each student for late submissions.
 
 # Notes
 
