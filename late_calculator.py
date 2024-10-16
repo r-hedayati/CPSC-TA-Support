@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import yaml
 import sys
+import math
 
 def get_user_inputs(yaml_file):
     if not os.path.exists(yaml_file):
@@ -142,8 +143,11 @@ def grade_book_report(grade_book_csv, grade_book_flag, personal_days_column_id, 
         for student_name, late_info in late_submissions.items():
             if student_name in df['Student Name'].values:
                 current_days_used = df.loc[df['Student Name'] == student_name, df.columns[personal_days_column_id]].values[0]
+
+                if current_days_used == "" or math.isnan(current_days_used):
+                    current_days_used = 0
                 
-                additional_days_used = late_info['Late Days']
+                additional_days_used = max(late_info['Late Days'], 0)
                 df.loc[df['Student Name'] == student_name, df.columns[personal_days_column_id]] = current_days_used + additional_days_used
             else:
                 print(f"Student {student_name} not found in grade book.")
