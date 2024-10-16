@@ -7,5 +7,5 @@ late_window: 15  #late duration window in minutes for the deadline
 course_name: "CourseName"
 assignment_name: "AssignmentName"
 filter_label: "Late" #choose beetwen "LATE", "EARLY", and "LATE (within offset)"
-early_label_on: True #choose beetwen "True" and "False" to show how early students submitted
+early_offset_on: True #Default is True, set to False if you want to filter early submissions offset time to zero
 output_format: "csv" #choose beetwen "excel" and "csv"

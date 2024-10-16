@@ -15,7 +15,7 @@ def get_user_inputs(yaml_file):
     except yaml.YAMLError as e:
         raise ValueError(f"Invalid YAML file: {e}")
     
-    required_inputs = ['deadline', 'zip_file_name', 'grade_book_csv_input_file_name', 'grade_book_analysis', 'course_name', 'assignment_name', 'personal_days_column_id', 'late_window', 'filter_label', 'early_label_on', 'output_format']
+    required_inputs = ['deadline', 'zip_file_name', 'grade_book_csv_input_file_name', 'grade_book_analysis', 'course_name', 'assignment_name', 'personal_days_column_id', 'late_window', 'filter_label', 'early_offset_on', 'output_format']
     for input in required_inputs:
         if input not in config:
             raise KeyError(f"Missing required configuration input: {input}")
@@ -29,12 +29,12 @@ def get_user_inputs(yaml_file):
     course_name = config['course_name']
     assignment_name = config['assignment_name']
     filter_label = config['filter_label']
-    early_label_on = config['early_label_on']
+    early_offset_on = config['early_offset_on']
     output_format = config.get('output_format', 'excel') # Default to excel
     
     deadline = datetime.strptime(deadline_str, "%Y-%m-%d %H:%M")
     
-    return deadline, zip_file_name, csv_file_name, grade_book_flag, course_name, assignment_name, personal_days_column, late_window, filter_label, early_label_on, output_format
+    return deadline, zip_file_name, csv_file_name, grade_book_flag, course_name, assignment_name, personal_days_column, late_window, filter_label, early_offset_on, output_format
 
 def extract_zip(zip_file_name):
     if not os.path.exists(zip_file_name):
@@ -64,16 +64,16 @@ def parse_folder_names():
     # Convert the dictionary to a list of tuples
     return list(submissions.values())
 
-def calculate_late_submissions(submissions, deadline, late_window, early_label_on):
+def calculate_late_submissions(submissions, deadline, late_window, early_offset_on):
     late_submissions = []
     late_submissions_dict = {}
-    if early_label_on == False:
+    if early_offset_on == False:
         print(f"Early submissions will be considered as Early. The offset will not be included in the late duration.")
     else:
         print(f"Early submissions will be considered as early. The offset will be included in the late duration.")
     for student_name, timestamp in submissions:
         late_duration = timestamp - deadline
-        if late_duration < timedelta(0) and early_label_on == False:
+        if late_duration < timedelta(0) and early_offset_on == False:
             late_duration = timedelta(0)
         total_seconds = late_duration.total_seconds()
         total_minutes = total_seconds / 60
@@ -179,10 +179,10 @@ def main():
         yaml_file = default_yaml_file
     
     try:
-        deadline, zip_file_name, csv_file_name, grade_book_flag, course_name, assignment_name, personal_days_column, late_window, filter_label, early_label_on, output_format = get_user_inputs(yaml_file)
-        extract_zip(zip_file_name)
+        deadline, zip_file_name, csv_file_name, grade_book_flag, course_name, assignment_name, personal_days_column, late_window, filter_label, early_offset_on, output_format = get_user_inputs(yaml_file)
+        # extract_zip(zip_file_name)
         submissions = parse_folder_names()
-        late_submissions = calculate_late_submissions(submissions, deadline, late_window, early_label_on)
+        late_submissions = calculate_late_submissions(submissions, deadline, late_window, early_offset_on)
         generate_output(late_submissions, course_name, assignment_name, output_format)
 
         # Update the grade book
