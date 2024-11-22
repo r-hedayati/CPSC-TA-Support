@@ -1,4 +1,4 @@
-deadline: "2019-09-28 22:00" #YYYY-MM-DD HH:MM in 24 hour format
+deadline: "2019-09-26 22:00" #YYYY-MM-DD HH:MM in 24 hour format
 zip_file_name: "AS1.zip" #make sure you have access to the directory of the zip file
 grade_book_csv_input_file_name: "CPSC 231 (Fall 2024).csv" #grade book file name
 grade_book_analysis: False #Default is False, set to True if you want to analyze the grade book
@@ -6,6 +6,6 @@ personal_days_column_id: 5 #column id for tracking the personal days
 late_window: 15  #late duration window in minutes for the deadline
 course_name: "CourseName"
 assignment_name: "AssignmentName"
-filter_label: "Late" #choose beetwen "LATE", "EARLY", and "LATE (within offset)"
+filter_label: "Over-Full" #choose beetwen "Full", "Available", and "Over-Full"
 early_offset_on: True #Default is True, set to False if you want to filter early submissions offset time to zero
 output_format: "csv" #choose beetwen "excel" and "csv"

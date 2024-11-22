@@ -82,11 +82,15 @@ def calculate_late_submissions(submissions, deadline, late_window, early_offset_
         late_duration_str = f"{hours}h {minutes}m"
         timestamp_str = timestamp.strftime("%Y-%m-%d %H:%M:%S")
         if total_minutes > late_window:
-            late_flag = "LATE"
-        elif total_minutes <= 0:
-            late_flag = "EARLY"
-        elif 0 < total_minutes <= late_window:
-            late_flag = "LATE (within offset)"
+            late_flag = "Over-Full" #LATE
+        elif total_minutes <= 0 :
+            late_flag = "Available" #EARLY
+        elif 0 < total_minutes < late_window:
+            late_flag = "Available"
+        elif total_minutes == late_window:
+            late_flag = "Full"
+        # elif 0 < total_minutes <= late_window:
+        #     late_flag = "LATE (within offset)" #LATE (within offset)
 
         late_days = (late_duration - late_window * timedelta(minutes=1)).days + 1 # Add 1 to include the day of the deadline
         late_submissions.append((student_name, timestamp_str, late_duration_str, late_flag, late_days))
@@ -95,7 +99,7 @@ def calculate_late_submissions(submissions, deadline, late_window, early_offset_
                                                "Late Days": late_days}
     return late_submissions_dict
 
-def generate_output(late_submissions, course_name, assignment_name, output_format, filter_label="LATE"):
+def generate_output(late_submissions, course_name, assignment_name, output_format, filter_label="Over-Full"):
     if not late_submissions:
         raise ValueError("No late submissions.")
         

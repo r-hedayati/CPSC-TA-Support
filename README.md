@@ -25,7 +25,7 @@ grade_book_analysis: False #Default is False, set to True if you want to analyze
 late_window: 15  #late duration window in minutes for the deadline
 course_name: "CourseName"
 assignment_name: "AssignmentName"
-filter_label: "Late" #choose beetwen "LATE", "EARLY", and "LATE (within offset)"
+filter_label: "Late" #choose beetwen "Full", "Available", and "Over-Full"
 early_offset_on: False #Default is True, set to False if you want to filter early submissions offset time to zero
 output_format: "excel" #choose beetwen "excel" and "csv"
 
